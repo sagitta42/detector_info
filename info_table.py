@@ -4,40 +4,42 @@ import pandas as pd
 
 # -------------------------------------------------------------------------------
 
-# path to LEGEND metadata
-# METADATA_PATH = "/home/sagitta/_legend/detectors/legend-detectors/germanium/detectors/"
-METADATA_PATH = "/home/sagitta/_legend/detectors/old_format/"
+# path to LEGEND detector metadata jsons
+METADATA_PATH = "/home/sagitta/_legend/detectors/legend-detectors/germanium/diodes/"
 
 # define json path to parameter keyword
 JSON_FIELDS = {
     'date': ['production', 'delivered'],
 
-    'mass': ['geometry', 'mass_in_g'],
+    'mass': ['production', 'mass_in_g'],
     'radius': ['geometry', 'radius_in_mm'],
     'height': ['geometry', 'height_in_mm'],
 
     'depV': ['production', 'dep_voltage_in_V'], # measured at HADES
     'depV_man': ['characterization', 'manufacturer', 'dep_voltage_in_V'], # manufacturer depV
 
-    'fwhm_Qbb': ['characterization', 'l200_site', 'res', 'qbb_in_keV'], # FWHM @ QBB from Th228 char
-    'fwhm_Co60': ['characterization', 'l200_site', 'res', 'cofep_in_keV'], # FWHM @ 60Co 2nd peak char
-    'fwhm_Co60_man': ['characterization', 'manufacturer', '60co_fep_res_in_keV'], # FWHM @ 60Co 2nd peak vendor
+    'fwhm_Qbb': ['characterization', 'l200_site', 'fwhm_in_keV', 'qbb'], # FWHM @ QBB from Th228 char
+    'fwhm_Co60': ['characterization', 'l200_site', 'fwhm_in_keV', 'co60fep'], # FWHM @ 60Co 2nd peak
+    'fwhm_Co60_man': ['characterization', 'manufacturer', 'fwhm_co60fep_in_keV'], # FWHM @ 60Co 2nd peak
 
-    'fwhm_TlFEP': ['characterization', 'l200_site', 'res', 'tlfep_in_keV'],
-    'sf_TlDEP': ['characterization', 'l200_site', 'sf', 'tldep_in_pc'],
-    'sf_Qbb': ['characterization', 'l200_site', 'sf', 'qbb_in_pc'],
-    'sf_TlSEP': ['characterization', 'l200_site', 'sf', 'tlsep_in_pc'],
-    'sf_TlFEP': ['characterization', 'l200_site', 'sf', 'tlfep_in_pc'],
+    'fwhm_TlFEP': ['characterization', 'l200_site', 'fwhm_in_keV', 'tl208fep'],
+    'sf_TlDEP': ['characterization', 'l200_site', 'survival_fraction', 'tl208dep'],
+    'sf_Qbb': ['characterization', 'l200_site', 'survival_fraction', 'qbb'],
+    'sf_TlSEP': ['characterization', 'l200_site', 'survival_fraction', 'tl208sep'],
+    'sf_TlFEP': ['characterization', 'l200_site', 'survival_fraction', 'tl208fep'],
 
-    'dl': ['geometry', 'dl_thickness_in_mm'],
-    'dl_man': ['characterization', 'manufacturer', 'dl_thickness_in_mm'],
+    'dl_man': ['characterization', 'manufacturer', 'dl_thickness_in_mm'], # for standard format
 
-    'enr': ['production', 'enrichment']
+    'daq': ['characterization', 'l200_site', 'daq'],
+
+    'enr': ['production', 'enrichment'],
+    'repr': ['production', 'reprocessing'],
+    'cry': ['production', 'crystal']
 }
 
 # -------------------------------------------------------------------------------
 
-def info_table(params, metadata_path=METADATA_PATH, det_type=['V'], max_order=10000):
+def info_table(params, metadata_path=METADATA_PATH, det_type='all', max_order=10000):
     '''
     (list, string, list, int) -> pd.DataFrame
 
@@ -45,7 +47,7 @@ def info_table(params, metadata_path=METADATA_PATH, det_type=['V'], max_order=10
 
     params [list]: list of parameter keywords as defined in JSON_FIELDS
     metadata_path [string]: path to folder with detector metadata jsons
-    det_type [list]: detector types to analyze, V=ICPC, B=BEGe, P=PPC, C=Coax (semi-coax)
+    det_type [list|string]: string or list of strings - detector type(s) to analyze, V=ICPC, B=BEGe, P=PPC, C=Coax (semi-coax), 'all' for all types
     max_order [int]: maximum order to plot (default all orders)
 
     >>> info_table(['mass', 'fwhm_Qbb'], 'legend-detectors/germanium/detectors/', ['B'])
@@ -58,6 +60,10 @@ def info_table(params, metadata_path=METADATA_PATH, det_type=['V'], max_order=10
     28  B00091C      0  0.627      2.11
     29  B00091D      0  0.693      2.09
     '''
+    if det_type == 'all':
+        det_type = ['B','C','P','V']
+    elif isinstance(det_type, str):
+        det_type = [det_type]
 
     # list of detector names
     det_list = detector_list(metadata_path, max_order, det_type)
@@ -95,7 +101,6 @@ def get_params(det_list, params, metadata_path=METADATA_PATH):
     for p in params: res[p] = []
 
     for det in det_list:
-        print(det)
         # read metadata file into a dict
         f = open(os.path.join(metadata_path, det + '.json'))
         js = json.load(f)

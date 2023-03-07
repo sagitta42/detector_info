@@ -29,31 +29,31 @@ def det_pie():
     Plot a pie chart of current status of L200 detector production
 
     >>> det_pie()
-    total number of detectors: 116
-    total mass: 163.89079999999998
+    total number of detectors: XXX
+    total mass: XXX
     ----BEGe (GERDA)
-    30 detectors - 20kg
+    N detectors - XXkg
     ----Coax (GERDA)
-    6 detectors - 15kg
+    N detectors - XXkg
     ----ICPC (GERDA)
-    5 detectors - 10kg
+    N detectors - XXkg
     ----ICPC (new)
-    42 detectors - 92kg
+    N detectors - XXkg
     ----PPC (MJD)
-    33 detectors - 28kg
-    leftover: 35kg
+    N detectors - XXkg
+    leftover: XXkg
                    mass    color                             label
     det_type
-    BEGe (GERDA)     20  #2ca02c  BEGe (GERDA)\n30 detectors\n20kg
-    Coax (GERDA)     15  #9467bd   Coax (GERDA)\n6 detectors\n15kg
-    ICPC (GERDA)     10  #1f77b4   ICPC (GERDA)\n5 detectors\n10kg
-    ICPC (new)       92  #07a9ff    ICPC (new)\n42 detectors\n92kg
-    ICPC (planned)   35  #cccccc              ICPC (planned)\n35kg
-    PPC (MJD)        28  #ff7f0e     PPC (MJD)\n33 detectors\n28kg
+    BEGe (GERDA)     XX  #2ca02c  BEGe (GERDA)\nN detectors\nXXkg
+    Coax (GERDA)     XX  #9467bd   Coax (GERDA)\nN detectors\nXXkg
+    ICPC (GERDA)     XX  #1f77b4   ICPC (GERDA)\nN detectors\nXXkg
+    ICPC (new)       XX  #07a9ff    ICPC (new)\nN detectors\nXXkg
+    ICPC (planned)   XX  #cccccc              ICPC (planned)\nXXkg
+    PPC (MJD)        XX  #ff7f0e     PPC (MJD)\nN detectors\nXXkg
     Saving as plots/L200_detector_pie.pdf
     '''
     ## 1. Read table
-    df = info_table(['mass'], det_type=['V', 'B', 'P', 'C'])
+    df = info_table(['mass'], det_type='all')
 
     print('total number of detectors: {}'.format(len(df)))
     print('total mass: {}'.format(df['mass'].sum()))
@@ -62,7 +62,7 @@ def det_pie():
     # here GERDA ICPCs will be marked as 'ICPC (new)' via LABELS['V']
     df['label'] = df['det_name'].apply(lambda x: LABELS[x[0]])
     # change label for GERDA ICPCs
-    df.at[df[ (df['det_type'] == 'V') & (df['order'] == 0) ].index, 'label'] = 'ICPC (GERDA)'
+    df.loc[ df[ (df['det_type'] == 'V') & (df['order'] == 0) ].index, 'label'] = 'ICPC (GERDA)'
 
     ## 2. Plot pie
 
@@ -96,7 +96,7 @@ def det_pie():
 
     plt.setp(pcts, color='white')#, fontweight='bold')
     # plt.tight_layout()
-    figname = 'plots/L200_detector_pie.pdf'
+    figname = 'L200_detector_pie.pdf'
     print('Saving as {}'.format(figname))
     plt.savefig(figname, bbox_inches='tight')
 
