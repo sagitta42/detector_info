@@ -30,7 +30,8 @@ TITLES = {
     'mass': 'Mass [kg]',
     'dl': 'Dead layer [mm]',
     'dl_man': 'Dead layer [mm]',
-    'enr': 'Enrichment (%)'
+    'enr': 'Enrichment (%)',
+    'fwhm_Qbb': r'FWHM @ Q$\beta\beta$ [keV]'
 }
 
 # colors for ICPC orders (order 0 = GERDA ICPC)
@@ -177,10 +178,10 @@ def params_vs_det(params, det_type=['V'], avg=False):
 
 if __name__ == '__main__':
     # default METADATA_PATH defined in info_table.py
-#    params_vs_det(['depV', 'depV_man'], det_type=['V'])
+   params_vs_det(['depV', 'depV_man'], det_type=['V'])
 #    params_vs_det(['mass'], det_type=['B'])
     # --- tests
-    params_vs_det(['dl', 'dl_man'], det_type=['B', 'P', 'C'])
+    # params_vs_det(['dl', 'dl_man'], det_type=['B', 'P', 'C'])
     # params_vs_det(['enr'], det_type=['B', 'P', 'C'])
     # params_vs_det(['enr'], det_type=['V'])
 

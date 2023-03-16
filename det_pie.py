@@ -94,11 +94,17 @@ def det_pie():
             explode = [0.02]*len(dfpie))
     ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 
+    # total text (comment out if not wanted)
+    total_text = "Total mass: {} kg".format(int(round(df['mass'].sum(),0)))
+    total_text += "\nTotal # detectors: {}".format(len(df))
+    fig.text(0.82, 0.15, total_text)
+
     plt.setp(pcts, color='white')#, fontweight='bold')
     # plt.tight_layout()
-    figname = 'L200_detector_pie.pdf'
+    figname = 'L200_detector_pie'
     print('Saving as {}'.format(figname))
-    plt.savefig(figname, bbox_inches='tight')
+    plt.savefig(figname + '.pdf', bbox_inches='tight')
+    plt.savefig(figname + '.png', bbox_inches='tight')
 
 if __name__ == '__main__':
     det_pie()
