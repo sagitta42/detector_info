@@ -16,7 +16,8 @@ JSON_FIELDS = {
     'height': ['geometry', 'height_in_mm'],
 
     'depV': ['production', 'dep_voltage_in_V'], # measured at HADES
-    'depV_man': ['characterization', 'manufacturer', 'dep_voltage_in_V'], # manufacturer depV
+    'depV_man': ['characterization', 'manufacturer', 'depletion_voltage_in_V'], # manufacturer depV
+    'recV_man': ['characterization', 'manufacturer', 'recommended_voltage_in_V'], # manufacturer depV
 
     'fwhm_Qbb': ['characterization', 'l200_site', 'fwhm_in_keV', 'qbb'], # FWHM @ QBB from Th228 char
     'fwhm_Co60': ['characterization', 'l200_site', 'fwhm_in_keV', 'co60fep'], # FWHM @ 60Co 2nd peak
@@ -34,7 +35,15 @@ JSON_FIELDS = {
 
     'enr': ['production', 'enrichment'],
     'repr': ['production', 'reprocessing'],
-    'cry': ['production', 'crystal']
+    'cry': ['production', 'crystal'],
+    # 'taper': ['geometry', 'taper', 'bottom', 'outer', 'height_in_mm'],
+    'top_taper_angle': ['geometry', 'taper', 'top', 'angle_in_deg'],
+    'top_taper_height': ['geometry', 'taper', 'top', 'height_in_mm'],
+    'top_taper_angle': ['geometry', 'taper', 'top', 'angle_in_deg'],
+    'bottom_taper_angle': ['geometry', 'taper', 'bottom', 'angle_in_deg'],
+    'bottom_taper_height': ['geometry', 'taper', 'bottom', 'height_in_mm'],
+    'man': ['production', 'manufacturer'],
+    'bull': ['geometry', 'bulletization', 'top_radius_in_mm']
 }
 
 # -------------------------------------------------------------------------------

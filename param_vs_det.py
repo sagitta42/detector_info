@@ -12,6 +12,7 @@ from info_table import *
 # (convenient to highlight L200 measurement vs other when more than 1 param is plotted)
 SYMBOL = {
     'depV_man': '^',
+    'recV_man': 'o',
     'dl_man': '^'
 }
 
@@ -19,7 +20,9 @@ SYMBOL = {
 # if parameter not in LABELS, there will be no legend label
 LABELS = {
     'depV': 'L200 measurement',
-    'depV_man': 'vendor specification',
+    # 'depV_man': 'vendor specification',
+    'depV_man': 'vendor depletion voltage',
+    'recV_man': 'vendor recommended voltage'
 }
 
 # y-axis titles
@@ -78,6 +81,7 @@ def params_vs_det(params, det_type=['V'], avg=False):
     ## 1. get param info
     # pandas dataframe with columns for given params for each detector of given type
     df = info_table(params, det_type=det_type)
+    print(df)
 
     # order index for gaps between orders of ICPC
     # for non-ICPC since there is only one "order" will be simply a normal plot
@@ -105,17 +109,22 @@ def params_vs_det(params, det_type=['V'], avg=False):
                 continue
 
             ## plot style
-            label = '_nolegend'
+            # label = '_nolegend_'
+            # default
+            label = LABELS[p] if len(params) > 1 else '_nolegend_'
+            color = None
             # order label applies only to ICPC; order 0 = GERDA
             if det_type == ['V']:
                 label = 'GERDA' if order == 0 else 'Order #{}{}'.format(0 if order < 10 else '', order)
-            # only want to plot label once per parameter
-            label = label if p == params[0] else '_nolegend_'
-            color = COLORS[order]
+                # only want to plot label once per parameter in case of order
+                label = label if p == params[0] else '_nolegend_'
+                color = COLORS[order]
+
             symbol = SYMBOL[p][0] if p in SYMBOL else 'o'
             # the marker will be solid by default or if label is 'L200 measurement' (to contrast with vendor)
             # otherwise no facecolor
-            mfc=color if not p in LABELS or LABELS[p] == 'L200 measurement' else 'none'
+            # mfc=color if not p in LABELS or LABELS[p] == 'L200 measurement' else 'none'
+            mfc=color
             # deafult solid line, otherwise defined in SYMBOL (only marker for no line)
             lstyle = '-'
             if p in SYMBOL: lstyle = SYMBOL[p][1:] if len(SYMBOL[p]) > 1 else 'none'
@@ -143,12 +152,14 @@ def params_vs_det(params, det_type=['V'], avg=False):
                 x = 0.05; y = 0.85
                 plt.text(x, y, text, transform=pp.ax.transAxes, fontsize=16, color='dimgrey', bbox=dict(facecolor='w', edgecolor='dimgrey', boxstyle='round'))
 
-    ## 4. Plot label for parameters once (phantom plot for legend)
-    for p in params:
-        plt.plot(-2,-2,\
-            marker = SYMBOL[p][0] if p in SYMBOL else 'o',\
-            ms=10, mfc='k' if not p in LABELS or LABELS[p] == 'L200 measurement' else 'none',\
-            linestyle='none', c = 'k', label=LABELS[p] if p in LABELS else '_nolegend_')
+    ## 4. Plot label for parameters once (phantom plot for legend with many orders)
+    # in case only ICPC were plotted so orders were used in labels rather than parameter labels
+    if det_type == ['V']:
+        for p in params:
+            plt.plot(-2,-2,\
+                marker = SYMBOL[p][0] if p in SYMBOL else 'o',\
+                ms=10, mfc='k' if not p in LABELS or LABELS[p] == 'L200 measurement' else 'none',\
+                linestyle='none', c = 'k', label=LABELS[p] if p in LABELS else '_nolegend_')
 
     ## 5. Style plot
     # force xlim because of the phantom points at (-2,-2)
@@ -178,11 +189,17 @@ def params_vs_det(params, det_type=['V'], avg=False):
 
 if __name__ == '__main__':
     # default METADATA_PATH defined in info_table.py
-   params_vs_det(['depV', 'depV_man'], det_type=['V'])
-#    params_vs_det(['mass'], det_type=['B'])
+    # params_vs_det(['depV_man', 'recV_man'], det_type=['P'])
+
+   # params_vs_det(['depV', 'depV_man'], det_type=['V'])
+   # params_vs_det(['mass'], det_type=['V'])
+    # params_vs_det(['dl', 'dl_man'], det_type=['B', 'P', 'C'])
+
     # --- tests
     # params_vs_det(['dl', 'dl_man'], det_type=['B', 'P', 'C'])
     # params_vs_det(['enr'], det_type=['B', 'P', 'C'])
-    # params_vs_det(['enr'], det_type=['V'])
+    params_vs_det(['enr'], det_type=['V'])
+
+
 
     # params_vs_det([''])
